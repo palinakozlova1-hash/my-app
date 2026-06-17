@@ -230,11 +230,21 @@ if col2 is not None:
         diff_pct = (df_brand["forecast"].sum() - real_total) / real_total * 100
         st.metric("Reálny súčet 2025", fmt_num(real_total), delta=f"{diff_pct:+.1f}%")
 
+# SOV% — podiel značky na celkovom GRP segmentu za rok 2025
+segment_forecast_total = df["forecast"].sum()
+brand_forecast_sov = df_brand["forecast"].sum() / segment_forecast_total * 100
+
 with col3:
-    st.metric("Maximum (deň)", fmt_num(df_brand["forecast"].max()))
+    st.metric("Forecast SOV", f"{brand_forecast_sov:.1f}%")
 
 with col4:
-    st.metric("Minimum (deň)", fmt_num(df_brand["forecast"].min()))
+    if is_real_available and show_real:
+        segment_real_total = df["real"].sum()
+        brand_real_sov = df_brand["real"].sum() / segment_real_total * 100
+        sov_diff = brand_forecast_sov - brand_real_sov
+        st.metric("Real SOV", f"{brand_real_sov:.1f}%", delta=f"{sov_diff:+.1f} p.b.")
+    else:
+        st.metric("Real SOV", "—")
 
 st.divider()
 
